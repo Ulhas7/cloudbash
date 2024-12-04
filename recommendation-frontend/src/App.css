@@ -1,0 +1,47 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.recommendation-widget {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.recommendation-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 200px;
+  text-align: center;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.recommendation-item img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.recommendation-item h3 {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.recommendation-item p {
+  color: #555;
+  margin: 5px 0;
+}
+
+.recommendation-item a {
+  text-decoration: none;
+  color: #007bff;
+  font-weight: bold;
+}
+
+.recommendation-item:hover {
+  transform: scale(1.05);
+}
