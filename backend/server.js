@@ -10,7 +10,7 @@ app.use(express.json());
 const recommendations = [
   {
     id: 1,
-    name: "Cotton T-Shirt",
+    name: "killer",
     price: "799",
     image: "https://via.placeholder.com/150",
     link: "#"
