@@ -1,58 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+import React, { useEffect, useState } from 'react';
 
-function App() {
-    const [offers, setOffers] = useState([]);
-    const [bestOffer, setBestOffer] = useState(null);
+const App = () => {
+  const [offerData, setOfferData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchOffers = async () => {
-            try {
-                const response = await fetch('http://localhost:5000/offers', {
-                    headers: { 'Content-Type': 'application/json' },
-                });
+  // Fetch data from backend
+  useEffect(() => {
+    fetch('http://localhost:5000/offers')
+      .then((response) => response.json())
+      .then((data) => {
+        setOfferData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
+  }, []);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-                const data = await response.json();
-                setOffers(data.bestPriceList || []);
-                setBestOffer(data.bestPrice || null);
-            } catch (error) {
-                console.error('Fetch Error:', error.message);
-            }
-        };
+  return (
+    <div className="app">
+      <h1>Best Offers</h1>
 
-        fetchOffers();
-    }, []);
+      {/* Display Best Price */}
+      <div className="best-price">
+        <h2>Best Price: {offerData.bestPrice.couponCode}</h2>
+        <p>Discount: {offerData.bestPrice.couponDiscount}</p>
+        <p>Price: ₹{offerData.bestPrice.price.discounted} (MRP: ₹{offerData.bestPrice.price.mrp})</p>
+        <p>Applicable On: {offerData.bestPrice.applicableOn}</p>
+      </div>
 
-    return (
-        <div className="App">
-            <h1>Offers and Discounts</h1>
-            {bestOffer && (
-                <div className="best-offer">
-                    <h2>Best Offer</h2>
-                    <p><strong>Coupon Code:</strong> {bestOffer.couponCode}</p>
-                    <p><strong>Discount:</strong> {bestOffer.couponDiscount}</p>
-                    <p><strong>Price:</strong> MRP: Rs.{bestOffer.price.mrp}, Discounted: Rs.{bestOffer.price.discounted}</p>
-                    <p><strong>Applicable on:</strong> {bestOffer.applicableOn}</p>
-                </div>
-            )}
-            <hr />
-            <h2>All Offers</h2>
-            <div className="offer-list">
-                {offers.map((offer, index) => (
-                    <div key={index} className="offer-card">
-                        <p><strong>Coupon Code:</strong> {offer.couponCode}</p>
-                        <p><strong>Discount:</strong> {offer.couponDiscount}</p>
-                        <p><strong>Price:</strong> MRP: Rs.{offer.price.mrp}, Discounted: Rs.{offer.price.discounted}</p>
-                        <p><strong>Applicable on:</strong> {offer.applicableOn}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-}
+      {/* Display Best Price List */}
+      <div className="best-price-list">
+        <h2>Other Offers</h2>
+        <ul>
+          {offerData.bestPriceList.map((offer, index) => (
+            <li key={index}>
+              <p>{offer.couponCode} - {offer.couponDiscount}</p>
+              <p>Discounted Price: ₹{offer.price.discounted} (MRP: ₹{offer.price.mrp})</p>
+              <p>Applicable On: {offer.applicableOn}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Display Related Products */}
+      <div className="related-products">
+  <h2>Similar Products</h2>
+  {offerData.related.map((related, index) => (
+    <div key={index}>
+      <h3>{related.type}</h3>
+      <div className="product">
+        {related.products.map((product) => (
+          <div key={product.id} className="product-item">
+            <a href={product.landingPageUrl} target="_blank" rel="noopener noreferrer">
+              <img
+                src={product.defaultImage.secureSrc}
+                alt={product.name}
+                className="product-image"
+              />
+              <h4>{product.name}</h4>
+            </a>
+            <p>Price: ₹{product.price.discounted} (MRP: ₹{product.price.mrp})</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  ))}
+</div>
+
+    </div>
+  );
+};
 
 export default App;
